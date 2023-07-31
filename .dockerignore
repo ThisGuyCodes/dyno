@@ -5,3 +5,4 @@ dyno
 
 Dockerfile
 run.sh
+.gitignore

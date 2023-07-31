@@ -18,4 +18,5 @@ USER nonroot:nonroot
 COPY --from=build --chown=nonroot:nonroot /app /app
 COPY --from=build --chown=nonroot:nonroot /db.sqlite3 /db.sqlite3
 
-ENTRYPOINT [ "/app" ]
+ENTRYPOINT [ "/app", "-address=:8080" ]
+EXPOSE 8080

@@ -5,7 +5,7 @@ WORKDIR /src
 COPY ./go.mod ./go.sum ./
 RUN go mod download
 COPY ./ ./
-RUN go test -timeout 30s
+RUN go test -timeout 30s ./...
 RUN go build \
     -ldflags "-linkmode 'external' -extldflags '-static'" \
     -o /app

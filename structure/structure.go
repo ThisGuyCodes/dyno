@@ -7,7 +7,7 @@ import (
 )
 
 var tableStatements = []string{
-	`CREATE TABLE IF NOT EXISTS .sequences (
+	`CREATE TABLE IF NOT EXISTS sequences (
 		UUID TEXT UNIQUE,
 		description TEXT NOT NULL,
 		sequence TEXT NOT NULL
@@ -23,7 +23,7 @@ func InitTables(ctx context.Context, db *sql.DB) error {
 
 	for _, statement := range tableStatements {
 		if _, err := tx.ExecContext(ctx, statement); err != nil {
-			return fmt.Errorf("could not create / replace table: %w", err)
+			return fmt.Errorf("could not create: %w", err)
 		}
 	}
 

@@ -9,14 +9,14 @@ COPY ./ ./
 RUN go build \
     -ldflags "-linkmode 'external' -extldflags '-static'" \
     -o /app
-RUN touch /db.sqlite3
+RUN touch /emptyfile
 
 FROM gcr.io/distroless/static-debian11:nonroot AS final
 LABEL maintainer="travis@thisguy.codes"
 USER nonroot:nonroot
 
 COPY --from=build --chown=nonroot:nonroot /app /app
-COPY --from=build --chown=nonroot:nonroot /db.sqlite3 /db.sqlite3
+COPY --from=build --chown=nonroot:nonroot /emptyfile /db.sqlite3
 
-ENTRYPOINT [ "/app", "-address=:8080" ]
+ENTRYPOINT [ "/app", "-address=:8080", "-DBName=db.sqlite3" ]
 EXPOSE 8080

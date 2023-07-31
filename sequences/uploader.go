@@ -19,6 +19,12 @@ type Uploader struct {
 func (u Uploader) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
+	// POST request only
+	if r.Method != http.MethodPost {
+		rw.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	compressedSequences, header, err := r.FormFile("sequences")
 	if err != nil {
 		log.Printf("Error getting form file from upload: %q", err)

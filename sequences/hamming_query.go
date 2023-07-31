@@ -17,6 +17,16 @@ type HammingQuery struct {
 func (hq HammingQuery) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
+	// POST or GET request only
+	switch r.Method {
+	case http.MethodPost:
+	case http.MethodGet:
+		break
+	default:
+		rw.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	incommingSequence := r.FormValue("sequence")
 
 	// empty sequence, or no sequence provided

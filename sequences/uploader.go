@@ -18,7 +18,6 @@ type Uploader struct {
 
 func (u Uploader) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-
 	// POST request only
 	if r.Method != http.MethodPost {
 		rw.WriteHeader(http.StatusBadRequest)
@@ -64,6 +63,7 @@ func (u Uploader) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	thisSequence := Sequence{}
+	first := true
 	for scanner.Scan() {
 		line := scanner.Bytes()
 
@@ -72,13 +72,19 @@ func (u Uploader) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		case line[0] == ';':
 			continue
 		case line[0] == '>':
-			// new sequence, insert the current one...
-			if _, err := tx.ExecContext(ctx, `
-				INSERT INTO sequences (UUID, description, sequence) ($1, $2, $3)
+			// this is the first one, skip inserting previous
+			if !first {
+				// new sequence, insert the current one...
+				if _, err := tx.ExecContext(ctx, `
+				INSERT INTO sequences (UUID, description, sequence) VALUES ($1, $2, $3)
 			`, uuid.NewString(), thisSequence.Description, thisSequence.Sequence); err != nil {
-				log.Printf("Error inserting a sequence from an upload: %q", err)
-				rw.WriteHeader(http.StatusInternalServerError)
-				return
+					log.Printf("Error inserting a sequence from an upload: %q", err)
+					log.Print(thisSequence)
+					rw.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+			} else {
+				first = false
 			}
 
 			// clear the existing one

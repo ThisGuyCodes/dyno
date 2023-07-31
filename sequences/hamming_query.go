@@ -47,7 +47,7 @@ func (hq HammingQuery) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	matches := make([]Sequence, 0)
 	for rows.Next() {
 		sequence := Sequence{}
-		if err := rows.Scan(sequence.UUID, sequence.Description, sequence.Sequence); err != nil {
+		if err := rows.Scan(&sequence.UUID, &sequence.Description, &sequence.Sequence); err != nil {
 			log.Printf("Error scanning existing sequences: %q", err)
 			rw.WriteHeader(http.StatusInternalServerError)
 			return
